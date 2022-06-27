@@ -1,5 +1,5 @@
-import { useThree } from "@react-three/fiber";
-import { useMemo, useState, useEffect } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { PlaneGeometry, MeshPhongMaterial, DoubleSide, Mesh, BufferAttribute, Raycaster, DirectionalLight, PerspectiveCamera } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ICoord } from ".";
@@ -7,7 +7,6 @@ import { ICoord } from ".";
 export function MontainsMap() {
     // Constantes
     const {camera,scene,gl} = useThree();
-    
     const plane = new PlaneGeometry(30, 30, 20, 20);
     const material = new MeshPhongMaterial({
       side: DoubleSide,
@@ -15,6 +14,7 @@ export function MontainsMap() {
       vertexColors: true
     });
     const mesh = new Mesh(plane, material);
+
     const randoms = useMemo(() => {
       return Array.from({
         length: mesh.geometry.attributes.position.
@@ -23,15 +23,19 @@ export function MontainsMap() {
         .map(() => Math.random()-0.5)
     }
       , [])
+
+      //States
     const [mouse, setMouse] = useState<ICoord | null>(null);
-  
+    const [rotation,setRotation] = useState(0);
+    mesh.rotation.y = rotation
     const meshColor = {r:0, g:.19,b: .4}
     const hoverColor = {r:.1, g:.5, b:1}
   
     // Each frames
-    // useFrame((state, delta) => {
-    //   mesh.rotation.y += 0.01;
-    // });
+    useFrame((state, delta) => {
+        const newRotation = rotation+0.01
+        setRotation(newRotation)
+    });
   
   
     // Color on each coordinates
@@ -91,13 +95,14 @@ export function MontainsMap() {
   
     // lumières
     const light = new DirectionalLight();
-    light.position.set(0, 0, -1);
+    light.position.set(0, -1, 1);
     const light2 = new DirectionalLight();
-    light2.position.set(0, 0, 1);
+    light2.position.set(0, 0, -1);
   
     // orbital control
-    new OrbitControls(camera, gl.domElement);
-  
+    const o =new OrbitControls(camera, gl.domElement);
+    o.enableZoom = false
+      
     // three consts
     useEffect(() => {
       camera.position.z = 30
