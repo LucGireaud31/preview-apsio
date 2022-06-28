@@ -6,64 +6,58 @@ import { ICoord } from ".";
 
 export function MontainsMap() {
     // Constantes
-    const {camera,scene,gl} = useThree();
+    const { camera, scene, gl } = useThree();
     const plane = new PlaneGeometry(30, 30, 20, 20);
     const material = new MeshPhongMaterial({
-      side: DoubleSide,
-      flatShading: true,
-      vertexColors: true
+        side: DoubleSide,
+        flatShading: true,
+        vertexColors: true
     });
     const mesh = new Mesh(plane, material);
 
     const randoms = useMemo(() => {
-      return Array.from({
-        length: mesh.geometry.attributes.position.
-          array.length
-      })
-        .map(() => Math.random()-0.5)
+        return Array.from({
+            length: mesh.geometry.attributes.position.
+                array.length
+        })
+            .map(() => Math.random() - 0.5)
     }
-      , [])
+        , [])
 
-      //States
+    //States
     const [mouse, setMouse] = useState<ICoord | null>(null);
-    const [rotation,setRotation] = useState(0);
+    const [rotation, setRotation] = useState(0);
     mesh.rotation.y = rotation
-    const meshColor = {r:0, g:.19,b: .4}
-    const hoverColor = {r:.1, g:.5, b:1}
-  
+    const meshColor = { r: 0, g: .19, b: .4 }
+    const hoverColor = { r: .1, g: .5, b: 1 }
+
     // Each frames
     useFrame((state, delta) => {
-        const newRotation = rotation+0.01
-        setRotation(newRotation)
+        const newRotation = rotation + 0.01
+        // setRotation(newRotation)
+
     });
-  
-  
+
+
     // Color on each coordinates
     const colors: number[] = []
-  
+
     for (let i = 0; i < mesh.geometry.attributes.position.count; i++) {
-      colors.push(meshColor.r,meshColor.g,meshColor.b);
+        colors.push(meshColor.r, meshColor.g, meshColor.b);
     }
-  
+
     mesh.geometry.setAttribute("color",
-      new BufferAttribute(new Float32Array(colors), 3)) // 3 car liste regroupé par 3 (r,g,b,r,g,b,etc...)
-  
-  
+        new BufferAttribute(new Float32Array(colors), 3)) // 3 car liste regroupé par 3 (r,g,b,r,g,b,etc...)
+
+
     // intersect
     if (mouse) {
-      const raycaster = new Raycaster()
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObject(mesh);
-      if (intersects.length > 0) {
-        const attributColor = mesh.geometry.attributes.color;
-  
-  
-        // // animation
-        // gsap.to(hoverColor, {
-        //   r: meshColor.r,
-        //   g: meshColor.g,
-        //   b: meshColor.b,
-        //   onUpdate: () => {
+        const raycaster = new Raycaster()
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObject(mesh);
+        if (intersects.length > 0) {
+            const attributColor = mesh.geometry.attributes.color;
+
             attributColor.setX(intersects[0].face!.a, hoverColor.r);
             attributColor.setX(intersects[0].face!.b, hoverColor.r);
             attributColor.setX(intersects[0].face!.c, hoverColor.r);
@@ -73,53 +67,53 @@ export function MontainsMap() {
             attributColor.setZ(intersects[0].face!.a, hoverColor.b);
             attributColor.setZ(intersects[0].face!.b, hoverColor.b);
             attributColor.setZ(intersects[0].face!.c, hoverColor.b);
+
             attributColor.needsUpdate = true
-        //   }
-        // })
-      }
+
+        }
     }
-  
+
     // Relief
     const positions = (mesh.geometry.attributes.position.array ??
-      []) as number[];
-  
+        []) as number[];
+
     for (let i = 0; i < positions.length; i += 3) {
-      const x = positions[i];
-      const y = positions[i + 1];
-      const z = positions[i + 2];
-  
-    //   positions[i ] = x + randoms[i] * 2;
-    //   positions[i + 1] = y + randoms[i] * 2;
-      positions[i + 2] = z + randoms[i] * 2;
+        const x = positions[i];
+        const y = positions[i + 1];
+        const z = positions[i + 2];
+
+        //   positions[i ] = x + randoms[i] * 2;
+        //   positions[i + 1] = y + randoms[i] * 2;
+        positions[i + 2] = z + randoms[i] * 2;
     }
-  
+
     // lumières
     const light = new DirectionalLight();
     light.position.set(0, -1, 1);
     const light2 = new DirectionalLight();
     light2.position.set(0, 0, -1);
-  
+
     // orbital control
-    const o =new OrbitControls(camera, gl.domElement);
+    const o = new OrbitControls(camera, gl.domElement);
     o.enableZoom = false
-      
+
     // three consts
     useEffect(() => {
-      camera.position.z = 30
-  
-      // Events listeners
-      gl.domElement.addEventListener("mousemove", (e) => {
-        setMouse({
-          x: e.clientX / innerWidth * 2 - 1,
-          y: -e.clientY / innerHeight * 2 + 1
+        camera.position.z = 30
+
+        // Events listeners
+        gl.domElement.addEventListener("mousemove", (e) => {
+            setMouse({
+                x: e.clientX / innerWidth * 2 - 1,
+                y: -e.clientY / innerHeight * 2 + 1
+            })
         })
-      })
     }, [])
-  
+
     scene.clear();
     scene.add(mesh);
     scene.add(light);
     scene.add(light2);
-  
+
     return <></>;
-  }
+}

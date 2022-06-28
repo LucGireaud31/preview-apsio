@@ -1,0 +1,4 @@
+newmtl Cupcake 1_17e26451-b823-43b9-8037-ce345f1cedfc
+Kd 1.000 1.000 1.000
+d 1.000
+map_Kd colorTexture&opacityTexture.png

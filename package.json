@@ -11,6 +11,7 @@
     "@chakra-ui/react": "^2.1.0",
     "@emotion/react": "11",
     "@emotion/styled": "11",
+    "@react-three/drei": "^9.14.3",
     "@react-three/fiber": "^8.0.27",
     "framer-motion": "6",
     "gsap": "^3.10.4",

@@ -1,4 +1,6 @@
 import { Canvas } from "@react-three/fiber";
+import { Suspense } from "react";
+import { CustomShape, Model } from "./CustomShape";
 import { MontainsMap } from "./MontainsMap";
 
 export interface ICoord {
@@ -13,7 +15,12 @@ export function Home(props: HomeProps) {
 
   return (
     <Canvas style={{ width: innerWidth, height: innerHeight }} >
-      <MontainsMap />
+      {/* <MontainsMap /> */}
+      <Suspense fallback={false}>
+
+      <Model/>
+      <ambientLight/>
+      </Suspense>
     </Canvas>
   );
 }
