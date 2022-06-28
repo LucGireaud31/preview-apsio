@@ -1,5 +1,6 @@
 import { useLoader, useThree } from "@react-three/fiber";
 import {
+  AmbientLight,
   DirectionalLight,
   MaterialLoader,
   ObjectLoader,
@@ -34,14 +35,11 @@ export function CustomShape() {
     setSize(innerWidth, innerHeight);
   });
 
-  const light = new DirectionalLight();
+  const light = new AmbientLight();
   light.position.set(0, 0, 1);
-  const light2 = new DirectionalLight();
-  light2.position.set(0, 0, -1);
 
   scene.clear();
   scene.add(light);
-  scene.add(light2);
 
   const mtl = useLoader(MTLLoader, "customShape/center.mtl");
 
