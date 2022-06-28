@@ -1,7 +1,13 @@
 import { useLoader, useThree } from "@react-three/fiber";
-import { MaterialLoader, ObjectLoader, PointLight } from "three";
+import {
+  DirectionalLight,
+  MaterialLoader,
+  ObjectLoader,
+  PointLight,
+} from "three";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 //  export function Model({ ...props }) {
 //     const group = useRef(null)
@@ -22,17 +28,20 @@ import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 //   }
 
 export function CustomShape() {
-  const { setSize, scene, camera } = useThree();
+  const { setSize, scene, camera, gl } = useThree();
 
   addEventListener("resize", () => {
     setSize(innerWidth, innerHeight);
   });
 
-  const light = new PointLight(0xff0000, 1.4, 1000);
-  light.position.set(0, 15, 15);
+  const light = new DirectionalLight();
+  light.position.set(0, 0, 1);
+  const light2 = new DirectionalLight();
+  light2.position.set(0, 0, -1);
 
   scene.clear();
   scene.add(light);
+  scene.add(light2);
 
   const mtl = useLoader(MTLLoader, "customShape/center.mtl");
 
@@ -41,6 +50,8 @@ export function CustomShape() {
     l.setMaterials(mtl);
   });
   camera.position.z = 200;
+  // orbital control
+  const o = new OrbitControls(camera, gl.domElement);
 
   scene.add(obj);
 
