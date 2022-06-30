@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
 import { CustomShape } from "./CustomShape";
 import { MontainsMap } from "./MontainsMap";
+import { MouseControl } from "./MouseControl";
 
 export interface ICoord {
   x: number;
@@ -14,9 +14,10 @@ export function Home(props: HomeProps) {
   const {} = props;
 
   return (
-    <Canvas style={{ width: innerWidth, height: innerHeight }}>
+    <Canvas style={{ width: innerWidth, height: innerHeight,background:"#c9c9c9" }}>
       {/* <MontainsMap /> */}
-      <CustomShape />
+      {/* <CustomShape /> */}
+      <MouseControl/>
     </Canvas>
   );
 }
