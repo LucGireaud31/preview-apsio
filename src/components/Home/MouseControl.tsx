@@ -1,4 +1,4 @@
-import { useLoader, useThree } from "@react-three/fiber"
+import { useFrame, useLoader, useThree } from "@react-three/fiber"
 import { Group, PointLight } from "three";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
@@ -7,11 +7,11 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { useEffect, useState } from "react";
 
 
-const nbElements = 2;
+const nbElements = 9;
 
 export function MouseControl() {
 
-    const { gl, scene, camera } = useThree()
+    const { gl, scene, camera,size } = useThree()
 
     const [coord, setCoord] = useState([0, 0])
 
@@ -32,17 +32,9 @@ export function MouseControl() {
         obj.position.x = coord[0] + (index * 100)
         obj.position.y = coord[1] + (index * 50)
 
+        obj.name = `obj_${index}`
         scene.add(obj);
     }
-
-    gl.domElement.addEventListener("mousemove", (e) => {
-        const x = e.clientX
-        const y = e.clientY
-
-        setCoord([(x * 2 / gl.domElement.width - 1) * 800, (y * 2 / gl.domElement.height - 1) * -400 - 50])
-    })
-
-    console.log(coord)
 
     const light = new PointLight();
     light.position.set(0, 150, 150);
@@ -50,16 +42,34 @@ export function MouseControl() {
     scene.clear();
     scene.add(light);
 
-    new OrbitControls(camera, gl.domElement);
+    // new OrbitControls(camera, gl.domElement);
 
-    
-        // Custom obj
-        for(let i = 0;i< 9; i++){
-            generateObject(i)
+
+    // Custom obj
+    for (let i = 0; i < nbElements; i++) {
+        generateObject(i)
+    }
+
+    useFrame((state) => {
+        for (let i = 0; i < nbElements; i++) {
+            const obj = state.scene.getObjectByName(`obj_${i}`)
+            if (obj) {
+
+                obj.position.x += 1
+            }
         }
-    
+    })
+
     useEffect(() => {
         camera.position.z = 500;
+
+
+        gl.domElement.addEventListener("mousemove", (e) => {
+            const x = e.clientX
+            const y = e.clientY
+
+            setCoord([(x * 2 / gl.domElement.width - 1) * size.width*0.85/2, (y * 2 / gl.domElement.height - 1) * -(size.height*0.85/2) - 50])
+        })
     }, [])
 
     return <></>
