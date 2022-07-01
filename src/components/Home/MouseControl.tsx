@@ -15,11 +15,31 @@ export function MouseControl() {
 
     const [coord, setCoord] = useState([0, 0])
 
+    function generateObject(index: number) {
+        const mtl = useLoader(MTLLoader, `customShape/center - Copie (${index}).mtl`);
+        const obj = useLoader(OBJLoader, `customShape/center - Copie (${index}).obj`,
+            (l: any) => {
+                mtl.preload();
+                l.setMaterials(mtl);
+
+                //   gsap.to(obj.position,{
+                //       y:0,
+                //       duration:2.5,
+                //       ease:"elastic.out(0.5, 0.3)"
+                //   })
+            });
+
+        obj.position.x = coord[0] + (index * 100)
+        obj.position.y = coord[1] + (index * 50)
+
+        scene.add(obj);
+    }
+
     gl.domElement.addEventListener("mousemove", (e) => {
         const x = e.clientX
         const y = e.clientY
 
-        setCoord([(x * 2 / gl.domElement.width - 1) * 610, (y * 2 / gl.domElement.height - 1) * -400 - 50])
+        setCoord([(x * 2 / gl.domElement.width - 1) * 800, (y * 2 / gl.domElement.height - 1) * -400 - 50])
     })
 
     console.log(coord)
@@ -32,49 +52,12 @@ export function MouseControl() {
 
     new OrbitControls(camera, gl.domElement);
 
-    // Custom obj
-
-
-
-        const mtl = useLoader(MTLLoader, "customShape/center.mtl");
-        const obj = useLoader(OBJLoader, "customShape/center.obj",
-            (l: any) => {
-                mtl.preload();
-                l.setMaterials(mtl);
-
-
-
-                //   gsap.to(obj.position,{
-                //       y:0,
-                //       duration:2.5,
-                //       ease:"elastic.out(0.5, 0.3)"
-                //   })
-            });
-
-        obj.position.x = coord[0] + (0*100)
-        obj.position.y = coord[1] + (0*10)
-        scene.add(obj)
     
-        const mtl2 = useLoader(MTLLoader, "customShape/center.mtl");
-        const obj2 = useLoader(OBJLoader, "customShape/center.obj",
-            (l: any) => {
-                mtl2.preload();
-                l.setMaterials(mtl2);
-
-
-
-                //   gsap.to(obj.position,{
-                //       y:0,
-                //       duration:2.5,
-                //       ease:"elastic.out(0.5, 0.3)"
-                //   })
-            });
-
-        obj.position.x = coord[0] + (1*100)
-        obj.position.y = coord[1] + (1*10)
-        scene.add(obj2)
+        // Custom obj
+        for(let i = 0;i< 9; i++){
+            generateObject(i)
+        }
     
-
     useEffect(() => {
         camera.position.z = 500;
     }, [])
