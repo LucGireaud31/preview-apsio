@@ -1,4 +1,5 @@
 import { Canvas } from "@react-three/fiber";
+import { ApsioLogo } from "./ApsioLogo";
 import { CustomShape } from "./CustomShape";
 import { MontainsMap } from "./MontainsMap";
 import { MouseControl } from "./MouseControl";
@@ -17,7 +18,8 @@ export function Home(props: HomeProps) {
     <Canvas style={{ width: innerWidth, height: innerHeight,background:"#c9c9c9" }}>
       {/* <MontainsMap /> */}
       {/* <CustomShape /> */}
-      <MouseControl/>
+      {/* <MouseControl/> */}
+      <ApsioLogo/>
     </Canvas>
   );
 }
