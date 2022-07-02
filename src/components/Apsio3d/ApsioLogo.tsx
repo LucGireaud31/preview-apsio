@@ -1,5 +1,5 @@
 import { useFrame, useLoader, useThree } from "@react-three/fiber"
-import { Group, Object3D, PointLight, Vector3 } from "three";
+import { Group, Object3D, PointLight, Raycaster, Vector3 } from "three";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 import gsap from "gsap";
@@ -24,17 +24,19 @@ const matrix = [
 
 ]
 const nbElements = matrix.length;
-console.log(nbElements)
+
+let coord = [0,12]
+
 export function ApsioLogo() {
 
     const { gl, scene, camera, size } = useThree()
 
-    const [coord, setCoord] = useState<[number, number]>([0, 12])
+    // const [coord, setCoord] = useState<[number, number]>([0, 12])
 
     const [isLoading, setIsLoading] = useState(true)
 
-    function generateObject(index: number) {
 
+    function generateObject(index: number) {
 
         new MTLLoader().load(`apsio_3d/APSIO_logo_${index}.mtl`, mtl => {
             mtl.preload();
@@ -44,8 +46,8 @@ export function ApsioLogo() {
 
             objLoader.load(`apsio_3d/APSIO_logo_${index}.obj`, obj => {
 
-                obj.position.x = coord[0] + (matrix[index][0] * unit)
-                obj.position.y = coord[1] + (matrix[index][1] * unit)
+                obj.position.x = 0+ (matrix[index][0] * unit)
+                obj.position.y = 12+ (matrix[index][1] * unit)
                 obj.position.z = -1000
 
                 obj.name = `obj_${index}`
@@ -53,11 +55,12 @@ export function ApsioLogo() {
                     delta: 0
                 }
 
-                if (!isLoading) {
-                    gsap.to(obj.position, {
-                        z: 0,
-                        duration: 0.8,
-                    })
+                if (!isLoading) {  
+                        gsap.to(obj.position, {
+                            z: 0,
+                            duration: 0.8,
+                      })
+                    
                     scene.add(obj);
                 }
             });
@@ -79,6 +82,7 @@ export function ApsioLogo() {
         generateObject(i)
     }
 
+
     useFrame((state) => {
         for (let i = 0; i < nbElements; i++) {
             const obj = state.scene.getObjectByName(`obj_${i}`)
@@ -91,7 +95,18 @@ export function ApsioLogo() {
                 obj.translateX(newX)
                 obj.rotateY(0.01)
 
+                const raycaster = new Raycaster()
+                console.log(coord)
+                raycaster.setFromCamera({x:coord[0],y:coord[1]}, camera);
+                const intersects = raycaster.intersectObject(obj);
 
+                if (intersects.length > 0) {
+                    console.log("intersect !")
+                    gsap.to(obj.rotation, {
+                        z: 360,
+                        duration: 1,
+                    })
+                }
 
                 obj.userData.delta += 0.05
             }
@@ -116,7 +131,12 @@ export function ApsioLogo() {
             const y = e.clientY
             const coef = 1
 
-            // setCoord([(x * 2 / gl.domElement.width - 1) * size.width * coef / 2, (y * 2 / gl.domElement.height - 1) * -(size.height * coef / 2) - 0])
+            // coord = ([(x * 2 / gl.domElement.width - 1) * size.width * coef / 2, (y * 2 / gl.domElement.height - 1) * -(size.height * coef / 2) - 0])
+
+            coord = ([
+                e.clientX / innerWidth * 2 - 1,
+                -e.clientY / innerHeight * 2 + 1
+            ])
         })
         console.log("fin loading")
         setIsLoading(false)
