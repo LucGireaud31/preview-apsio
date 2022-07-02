@@ -47,7 +47,7 @@ export function ApsioLogo() {
 
                     obj.position.x = 0 + (matrix[i][0] * unit)
                     obj.position.y = 12 + (matrix[i][1] * unit)
-                    obj.position.z = -1000
+                    obj.position.z = -0
 
                     obj.name = `obj_${i}`
                     obj.userData = {
