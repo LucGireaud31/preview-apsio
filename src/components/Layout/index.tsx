@@ -14,6 +14,7 @@ export function Layout(props: LayoutProps) {
             <Box px={300} fontSize={20}>
                 <Flex h={100}>
                     <Image src="icons/logo.png" />
+                    {/* <Apsio3d h="300px" bg="red"/> */}
                     <HStack mx="auto" align="center" w="fit-content" spacing={8}>
                         <Text>Accueil</Text>
                         <Text>La blockchain</Text>

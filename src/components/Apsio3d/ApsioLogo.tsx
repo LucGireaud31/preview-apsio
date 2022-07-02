@@ -21,16 +21,15 @@ const matrix = [
     [-6, -10.2], [-4.2, -10.2], [-2.5, -10.2], [-0.8, -10.2], [0.8, -10.2], [2.6, -10.2], [4.5, -10.2], [6, -10.2],
     [-3.2, -12], [-1.75, -12], [0, -12], [1.75, -12], [3.2, -12],
     [-0.8, -13.5], [0.8, -13.5],
-
 ]
 const nbElements = matrix.length;
 
-let coord = [0,12]
+let coord: [number, number] | null = null
 
 export function ApsioLogo() {
 
     const { gl, scene, camera, size } = useThree()
-
+    console.log(gl.domElement.clientWidth)
     // const [coord, setCoord] = useState<[number, number]>([0, 12])
 
     const [isLoading, setIsLoading] = useState(true)
@@ -46,8 +45,8 @@ export function ApsioLogo() {
 
             objLoader.load(`apsio_3d/APSIO_logo_${index}.obj`, obj => {
 
-                obj.position.x = 0+ (matrix[index][0] * unit)
-                obj.position.y = 12+ (matrix[index][1] * unit)
+                obj.position.x = 0 + (matrix[index][0] * unit)
+                obj.position.y = 12 + (matrix[index][1] * unit)
                 obj.position.z = -1000
 
                 obj.name = `obj_${index}`
@@ -55,18 +54,18 @@ export function ApsioLogo() {
                     delta: 0
                 }
 
-                if (!isLoading) {  
-                        gsap.to(obj.position, {
-                            z: 0,
-                            duration: 0.8,
-                      })
-                    
+                if (!isLoading) {
+                    gsap.to(obj.position, {
+                        z: 0,
+                        duration: 0.3,
+                    })
+console.log("ajout ")
                     scene.add(obj);
                 }
             });
         });
     }
-    console.log("je me rend")
+    console.log("je me rendons")
     const light = new PointLight();
     light.position.set(0, 15, 15);
 
@@ -96,16 +95,19 @@ export function ApsioLogo() {
                 obj.rotateY(0.01)
 
                 const raycaster = new Raycaster()
-                console.log(coord)
-                raycaster.setFromCamera({x:coord[0],y:coord[1]}, camera);
-                const intersects = raycaster.intersectObject(obj);
+                // console.log(coord)
 
-                if (intersects.length > 0) {
-                    console.log("intersect !")
-                    gsap.to(obj.rotation, {
-                        z: 360,
-                        duration: 1,
-                    })
+                if (coord) {
+
+                    raycaster.setFromCamera({ x: coord[0], y: coord[1] }, camera);
+                    const intersects = raycaster.intersectObject(obj);
+
+                    if (intersects.length > 0) {
+                        gsap.to(obj.rotation, {
+                            x: 2*Math.PI,
+                            duration: 0.6,
+                        })
+                    }
                 }
 
                 obj.userData.delta += 0.05
@@ -127,15 +129,15 @@ export function ApsioLogo() {
         // }
 
         gl.domElement.addEventListener("mousemove", (e) => {
-            const x = e.clientX
-            const y = e.clientY
+            const x = e.offsetX
+            const y = e.offsetY
             const coef = 1
 
             // coord = ([(x * 2 / gl.domElement.width - 1) * size.width * coef / 2, (y * 2 / gl.domElement.height - 1) * -(size.height * coef / 2) - 0])
 
             coord = ([
-                e.clientX / innerWidth * 2 - 1,
-                -e.clientY / innerHeight * 2 + 1
+                x / gl.domElement.width * 2 - 1,
+                -y / gl.domElement.height * 2 + 1
             ])
         })
         console.log("fin loading")
