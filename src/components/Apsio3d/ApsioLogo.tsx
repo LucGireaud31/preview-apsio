@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { useEffect, useMemo, useState } from "react";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js"
+import { generateObject, generateText } from "../../utils/three";
 
 
 const unit = 1.5
@@ -29,79 +30,29 @@ export function ApsioLogo() {
 
     const { gl, scene, camera } = useThree()
 
-    const [objs, setObjs] = useState<null | Group[]>(null);
+    const [objs, setObjs] = useState<null | { groups: Group[], letters: any[] }>(null);
 
     useEffect(() => {
-        // Generate objects
-        const currentObjs: Group[] = []
+        (async () => {
+            // Static params
+            camera.position.z = 50;
 
-        for (let i = 0; i < nbElements; i++) {
+            // Generate objects
+            setObjs(await generateObject(matrix, nbElements, unit))
 
-            new MTLLoader().load(`apsio_3d/APSIO_logo.mtl`, mtl => {
-                mtl.preload();
+            // Events listeners
+            gl.domElement.addEventListener("mousemove", (e) => {
+                const x = e.offsetX
+                const y = e.offsetY
 
-                const objLoader = new OBJLoader();
-                objLoader.setMaterials(mtl);
+                coord = ([
+                    x / gl.domElement.width * 2 - 1,
+                    -y / gl.domElement.height * 2 + 1
+                ])
+            })
 
-                objLoader.load(`apsio_3d/APSIO_logo.obj`, obj => {
-
-                    obj.position.x = 0 + (matrix[i][0] * unit)
-                    obj.position.y = 12 + (matrix[i][1] * unit)
-                    obj.position.z = -1000
-
-                    obj.name = `obj_${i}`
-                    obj.userData = {
-                        delta: 0,
-                        animated: false
-                    }
-
-                    currentObjs.push(obj)
-                    console.log("je charge")
-
-                    if (i == nbElements - 1) {
-                        setObjs(currentObjs)
-                        console.log("fin loading")
-                    }
-                });
-            });
-        }
-
-        // Static params
-        camera.position.z = 50;
-
-        gl.domElement.addEventListener("mousemove", (e) => {
-            const x = e.offsetX
-            const y = e.offsetY
-
-            coord = ([
-                x / gl.domElement.width * 2 - 1,
-                -y / gl.domElement.height * 2 + 1
-            ])
-        })
-
+        })()
     }, [])
-
-    function generateText(text: string = "APSIO") {
-
-        const loader = new FontLoader();
-
-        loader.load('font/Hyperjump_Regular.json', function (font) {
-            const geometry = new TextGeometry(text, { font: font, size: 6, height: 2 })
-            const textMesh = new Mesh(geometry, [
-                new MeshPhongMaterial({ color: 0xFF0000 }),
-                new MeshPhongMaterial({ color: 0xFFFFFF }),
-            ])
-
-            const textSize = new Box3().setFromObject(textMesh);
-            const textWidth = textSize.max.x - textSize.min.x;
-
-            textMesh.position.x = -textWidth / 2
-            textMesh.position.y = 18
-
-
-            scene.add(textMesh)
-        });
-    }
 
     console.log("je me rendons")
 
@@ -111,11 +62,13 @@ export function ApsioLogo() {
     scene.clear();
 
     scene.add(light);
-    objs?.map(o => scene.add(o))
+    objs?.groups.map(group => scene.add(group))
+    objs?.letters.map(letter => scene.add(letter))
+
 
     // Custom obj
     useFrame((state) => {
-        objs?.map(obj => {
+        objs?.groups.map(obj => {
             if (obj.userData.animated) {
                 // Logo animated so just spining
 
