@@ -1,0 +1,4 @@
+newmtl Solid_9f379ac6-2155-42dd-8d73-169bf5c5049f
+Kd 1.000 1.000 1.000
+d 1.000
+map_Kd Linear_Gradient_Texture.jpg
