@@ -37,13 +37,13 @@ export function ApsioLogo() {
 
         for (let i = 0; i < nbElements; i++) {
 
-            new MTLLoader().load(`apsio_3d/APSIO_logo_${i}.mtl`, mtl => {
+            new MTLLoader().load(`apsio_3d/APSIO_logo.mtl`, mtl => {
                 mtl.preload();
 
                 const objLoader = new OBJLoader();
                 objLoader.setMaterials(mtl);
 
-                objLoader.load(`apsio_3d/APSIO_logo_${i}.obj`, obj => {
+                objLoader.load(`apsio_3d/APSIO_logo.obj`, obj => {
 
                     obj.position.x = 0 + (matrix[i][0] * unit)
                     obj.position.y = 12 + (matrix[i][1] * unit)
