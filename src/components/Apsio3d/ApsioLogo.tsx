@@ -35,31 +35,33 @@ export function ApsioLogo() {
 
     function generateObject(index: number) {
 
-        const mtl = useLoader(MTLLoader, `apsio_3d/APSIO_logo_${index}.mtl`);
-        const obj = useLoader(OBJLoader, `apsio_3d/APSIO_logo_${index}.obj`,
-            (l: any) => {
-                mtl.preload();
-                l.setMaterials(mtl);
 
+        new MTLLoader().load(`apsio_3d/APSIO_logo_${index}.mtl`, mtl => {
+            mtl.preload();
+
+            const objLoader = new OBJLoader();
+            objLoader.setMaterials(mtl);
+
+            objLoader.load(`apsio_3d/APSIO_logo_${index}.obj`, obj => {
+
+                obj.position.x = coord[0] + (matrix[index][0] * unit)
+                obj.position.y = coord[1] + (matrix[index][1] * unit)
+                obj.position.z = -1000
+
+                obj.name = `obj_${index}`
+                obj.userData = {
+                    delta: 0
+                }
+
+                if (!isLoading) {
+                    gsap.to(obj.position, {
+                        z: 0,
+                        duration: 0.8,
+                    })
+                    scene.add(obj);
+                }
             });
-
-        obj.position.x = coord[0] + (matrix[index][0] * unit)
-        obj.position.y = coord[1] + (matrix[index][1] * unit)
-        obj.position.z = -1000
-
-        obj.name = `obj_${index}`
-        obj.userData = {
-            delta: 0
-        }
-
-
-        if(!isLoading){
-            gsap.to(obj.position, {
-                z: 0,
-                duration: 0.8,
-            })
-            scene.add(obj);
-        }
+        });
     }
     console.log("je me rend")
     const light = new PointLight();
@@ -98,7 +100,7 @@ export function ApsioLogo() {
 
     useEffect(() => {
         camera.position.z = 50;
-      
+
         // for (let i = 0; i < nbElements; i++) {
         //     const obj = scene.getObjectByName(`obj_${i}`)
         //     if (obj) {
