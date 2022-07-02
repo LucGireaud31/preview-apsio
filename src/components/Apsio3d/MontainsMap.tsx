@@ -2,7 +2,11 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { PlaneGeometry, MeshPhongMaterial, DoubleSide, Mesh, BufferAttribute, Raycaster, DirectionalLight, PerspectiveCamera } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { ICoord } from ".";
+
+interface ICoord {
+    x:number,
+    y:number
+}
 
 export function MontainsMap() {
     // Constantes

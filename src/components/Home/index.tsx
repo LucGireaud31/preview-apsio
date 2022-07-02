@@ -1,25 +1,17 @@
-import { Canvas } from "@react-three/fiber";
-import { ApsioLogo } from "./ApsioLogo";
-import { CustomShape } from "./CustomShape";
-import { MontainsMap } from "./MontainsMap";
-import { MouseControl } from "./MouseControl";
+import { Box, Center, Flex } from "@chakra-ui/react";
+import { Apsio3d } from "../Apsio3d";
 
-export interface ICoord {
-  x: number;
-  y: number;
-}
-
-interface HomeProps {}
-
-export function Home(props: HomeProps) {
-  const {} = props;
+export function Home() {
 
   return (
-    <Canvas style={{ width: innerWidth, height: innerHeight,background:"#c9c9c9" }}>
-      {/* <MontainsMap /> */}
-      {/* <CustomShape /> */}
-      {/* <MouseControl/> */}
-      <ApsioLogo/>
-    </Canvas>
+    <Box w="full" h="100vh">
+      <Flex>
+        <Center w="50%">
+          Du texte...
+        </Center>
+
+        <Apsio3d h="calc(100vh * 0.7)" bg="#00000005" w="50%" rounded="50px" />
+      </Flex>
+    </Box>
   );
 }
