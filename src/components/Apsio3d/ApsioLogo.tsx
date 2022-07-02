@@ -25,54 +25,43 @@ const nbElements = matrix.length;
 
 let coord: [number, number] | null = null
 
-function generateObjects() {
-
-  
-}
-
 export function ApsioLogo() {
 
     const { gl, scene, camera } = useThree()
 
-    const [objs,setObjs] = useState<null|Group[]>(null);
+    const [objs, setObjs] = useState<null | Group[]>(null);
 
-    useEffect(()=>{
+    useEffect(() => {
         // Generate objects
-        const currentObjs:Group[] = []
+        const currentObjs: Group[] = []
 
         for (let i = 0; i < nbElements; i++) {
 
             new MTLLoader().load(`apsio_3d/APSIO_logo_${i}.mtl`, mtl => {
                 mtl.preload();
-    
+
                 const objLoader = new OBJLoader();
                 objLoader.setMaterials(mtl);
-    
+
                 objLoader.load(`apsio_3d/APSIO_logo_${i}.obj`, obj => {
-    
+
                     obj.position.x = 0 + (matrix[i][0] * unit)
                     obj.position.y = 12 + (matrix[i][1] * unit)
                     obj.position.z = -1000
-    
+
                     obj.name = `obj_${i}`
                     obj.userData = {
-                        delta: 0
+                        delta: 0,
+                        animated: false
                     }
-    
+
                     currentObjs.push(obj)
                     console.log("je charge")
-                    if(i == nbElements - 1){
+
+                    if (i == nbElements - 1) {
                         setObjs(currentObjs)
                         console.log("fin loading")
                     }
-                    // if (!isLoading) {
-                    //     gsap.to(obj.position, {
-                    //         z: 0,
-                    //         duration: 0.3,
-                    //     })
-                    //     console.log("ajout ")
-                    //     scene.add(obj);
-                    // }
                 });
             });
         }
@@ -90,7 +79,7 @@ export function ApsioLogo() {
             ])
         })
 
-    },[])
+    }, [])
 
     function generateText(text: string = "APSIO") {
 
@@ -115,35 +104,33 @@ export function ApsioLogo() {
     }
 
     console.log("je me rendons")
-    console.log(objs)
 
     const light = new PointLight();
     light.position.set(0, 15, 15);
 
     scene.clear();
-    scene.add(light);
 
+    scene.add(light);
+    objs?.map(o => scene.add(o))
 
     // Custom obj
     useFrame((state) => {
-        for (let i = 0; i < nbElements; i++) {
-            const obj = state.scene.getObjectByName(`obj_${i}`)
-            if (obj) {
+        objs?.map(obj => {
+            if (obj.userData.animated) {
+                // Logo animated so just spining
 
                 const delta = obj.userData.delta;
-
                 const newX = Math.cos((delta % (2 * Math.PI))) * 0.1
 
                 obj.translateX(newX)
                 obj.rotateY(0.01)
 
-
+                // Check if mouse hover item
                 if (coord) {
                     const raycaster = new Raycaster()
 
                     raycaster.setFromCamera({ x: coord[0], y: coord[1] }, camera);
                     const intersects = raycaster.intersectObject(obj);
-
                     if (intersects.length > 0) {
                         gsap.to(obj.rotation, {
                             x: 2 * Math.PI,
@@ -153,8 +140,15 @@ export function ApsioLogo() {
                 }
 
                 obj.userData.delta += 0.05
+            } else {
+                // Logo is animating
+                gsap.to(obj.position, {
+                    z: 0,
+                    duration: 0.3,
+                })
+                obj.userData.animated = true;
             }
-        }
+        })
     })
 
     return <></>
