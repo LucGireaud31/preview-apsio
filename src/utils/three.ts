@@ -37,6 +37,8 @@ export async function generateText(
             textMesh.position.x = currentWidth;
             textMesh.position.y = startY;
 
+            textMesh.rotation.x = 0.4;
+
             textMesh.userData = {
               delta: 0,
             };

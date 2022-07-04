@@ -158,11 +158,8 @@ export function ApsioLogo() {
         if (intersects.length > 0) {
           console.log(intersects);
           gsap.to(letter.rotation, {
-            x: 2 * Math.PI,
+            y: 2 * Math.PI + letter.rotation.y,
             duration: 1,
-            onComplete: () => {
-              letter.rotation.x = 0;
-            },
           });
         }
       }
