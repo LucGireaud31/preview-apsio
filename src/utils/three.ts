@@ -37,6 +37,10 @@ export async function generateText(
             textMesh.position.x = currentWidth;
             textMesh.position.y = startY;
 
+            textMesh.userData = {
+              delta: 0,
+            };
+
             currentWidth += textWidth + space;
 
             resolve(textMesh);
