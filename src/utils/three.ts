@@ -4,11 +4,17 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 
-export async function generateText(word: string = "APSIO") {
+export async function generateText(
+  word: string = "APSIO",
+  startX: number = 0,
+  space: number = 0,
+  startY: number = 0
+) {
   const loader = new FontLoader();
 
-  const space = 2;
   const result: Mesh<TextGeometry, MeshPhongMaterial[]>[] = [];
+
+  let currentWidth = startX;
 
   await Promise.all(
     word.split("").map(async (letter, i) => {
@@ -28,10 +34,10 @@ export async function generateText(word: string = "APSIO") {
             const textSize = new Box3().setFromObject(textMesh);
             const textWidth = textSize.max.x - textSize.min.x;
 
-            const finalWordWidth = word.length * (textWidth + space) - space;
+            textMesh.position.x = currentWidth;
+            textMesh.position.y = startY;
 
-            textMesh.position.x = -finalWordWidth / 2 + i * (textWidth + space);
-            textMesh.position.y = 18;
+            currentWidth += textWidth + space;
 
             resolve(textMesh);
           });
@@ -76,7 +82,7 @@ export async function generateObject(
           console.log("je charge");
 
           if (i == nbElements - 1) {
-            const letters = await generateText("APSIO");
+            const letters = await generateText("APSIO", -9, 0.5, 18);
 
             console.log("fin loading");
 
